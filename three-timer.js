@@ -3,6 +3,8 @@
   const canvas = document.getElementById('timer-canvas');
   if (!canvas) return;
 
+  const processingSection = document.getElementById('processing');
+
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.z = 12;
@@ -62,14 +64,11 @@
   const pts = new THREE.Points(pGeo, pMat);
   scene.add(pts);
 
-  let running = false;
+  let animId = null;
+  let isRunning = false;
 
   function animate() {
-    if (!document.getElementById('processing').classList.contains('active')) {
-      requestAnimationFrame(animate);
-      return;
-    }
-    requestAnimationFrame(animate);
+    animId = requestAnimationFrame(animate);
 
     const t = Date.now() * 0.001;
     rings.forEach((r, i) => {
@@ -81,13 +80,44 @@
 
     renderer.render(scene, camera);
   }
-  animate();
 
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+  function start() {
+    if (!isRunning) {
+      isRunning = true;
+      animate();
+    }
+  }
+
+  function stop() {
+    if (isRunning) {
+      isRunning = false;
+      if (animId) cancelAnimationFrame(animId);
+    }
+  }
+
+  // Observe when the processing screen becomes active/inactive
+  const observer = new MutationObserver(() => {
+    if (processingSection && processingSection.classList.contains('active')) {
+      start();
+    } else {
+      stop();
+    }
   });
 
-  window.timerScene = { renderer, scene };
+  if (processingSection) {
+    observer.observe(processingSection, { attributes: true, attributeFilter: ['class'] });
+    if (processingSection.classList.contains('active')) start();
+  }
+
+  function onResize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  }
+  window.addEventListener('resize', onResize);
+
+  window.timerScene = { renderer, scene, camera, start, stop };
 })();
