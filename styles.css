@@ -22,17 +22,20 @@ html, body {
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+/* Sections & Smooth Fading */
 .section {
   position: absolute;
   inset: 0;
-  display: none;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
 .section.active {
-  display: block;
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* ===== LANDING ===== */
@@ -107,6 +110,8 @@ html, body {
 
 /* Buttons */
 .btn-primary {
+  display: inline-block;
+  text-decoration: none;
   background: linear-gradient(135deg, var(--accent), #ff6b8a);
   color: white;
   border: none;
@@ -135,6 +140,7 @@ html, body {
 }
 
 .btn-secondary {
+  display: inline-block;
   background: transparent;
   color: var(--text);
   border: 1px solid rgba(255,255,255,0.25);
@@ -153,6 +159,9 @@ html, body {
 /* ===== TOOL ===== */
 #tool {
   background: radial-gradient(ellipse at center, #0a0a12 0%, #050508 70%);
+}
+
+#tool.active {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,6 +302,10 @@ html, body {
 }
 
 /* ===== OUTRO ===== */
+#outro {
+  background: #020205;
+}
+
 #outro-canvas {
   position: absolute;
   inset: 0;
