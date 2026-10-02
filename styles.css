@@ -1,0 +1,337 @@
+:root {
+  --bg: #050508;
+  --accent: #ff2d55;
+  --accent2: #00f0ff;
+  --text: #f0f0f5;
+  --muted: #8a8a9a;
+  --glow: 0 0 40px rgba(255, 45, 85, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.section {
+  position: absolute;
+  inset: 0;
+  display: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.section.active {
+  display: block;
+  opacity: 1;
+}
+
+/* ===== LANDING ===== */
+#landing-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.landing-content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  pointer-events: none;
+}
+
+.landing-content > * {
+  pointer-events: auto;
+}
+
+.logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  color: var(--accent2);
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+.cinematic-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #fff 0%, #ff9a9e 50%, #00f0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 60px rgba(255, 45, 85, 0.3);
+}
+
+.subtitle {
+  max-width: 540px;
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.letterbox {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8vh;
+  background: #000;
+  z-index: 20;
+}
+
+.letterbox.top { top: 0; }
+.letterbox.bottom { bottom: 0; }
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #ff6b8a);
+  color: white;
+  border: none;
+  padding: 1rem 2.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 60px rgba(255, 45, 85, 0.6);
+}
+
+.btn-primary.glow {
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 30px rgba(255, 45, 85, 0.4); }
+  50% { box-shadow: 0 0 60px rgba(255, 45, 85, 0.7); }
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+
+/* ===== TOOL ===== */
+#tool {
+  background: radial-gradient(ellipse at center, #0a0a12 0%, #050508 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-container {
+  max-width: 680px;
+  width: 90%;
+  text-align: center;
+}
+
+.tool-container h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.tool-desc {
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.input-group {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+}
+
+.input-group input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 1rem 1.4rem;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.input-group input:focus {
+  border-color: var(--accent);
+}
+
+.input-group input::placeholder {
+  color: #555;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  text-align: left;
+}
+
+.feat {
+  background: rgba(255,255,255,0.04);
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.feat span {
+  color: var(--accent2);
+  margin-right: 0.5rem;
+}
+
+/* ===== PROCESSING ===== */
+#processing {
+  background: #020205;
+}
+
+#timer-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.processing-ui {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.process-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.timer-display {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 80px rgba(0, 240, 255, 0.3);
+}
+
+.status-text {
+  color: var(--muted);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.progress-bar {
+  width: min(420px, 80vw);
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.reel-count {
+  font-size: 0.95rem;
+  color: var(--accent2);
+  letter-spacing: 0.05em;
+}
+
+/* ===== OUTRO ===== */
+#outro-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.outro-content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.outro-content h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin-bottom: 1rem;
+}
+
+.outro-sub {
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+  font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .input-group {
+    flex-direction: column;
+  }
+  .features {
+    grid-template-columns: 1fr;
+  }
+  .cinematic-title {
+    font-size: 2rem;
+  }
+}

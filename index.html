@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReelForge — Playlist → Cinematic Shorts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <!-- ========== LANDING ========== -->
+  <section id="landing" class="section active">
+    <canvas id="landing-canvas"></canvas>
+    <div class="landing-content">
+      <div class="logo">Reel<span>Forge</span></div>
+      <h1 class="cinematic-title">Transform Playlists<br/>into Cinematic Shorts</h1>
+      <p class="subtitle">Drop a YouTube playlist. We forge every second into perfect 30-second reels — no content lost, pure vertical energy.</p>
+      <button id="enter-btn" class="btn-primary glow">Enter the Forge</button>
+    </div>
+    <div class="letterbox top"></div>
+    <div class="letterbox bottom"></div>
+  </section>
+
+  <!-- ========== TOOL ========== -->
+  <section id="tool" class="section">
+    <div class="tool-container">
+      <h2>Playlist → Reels Engine</h2>
+      <p class="tool-desc">Paste any public YouTube playlist URL. Every video will be split into sequential 30-second vertical shorts that cover the entire content.</p>
+      
+      <div class="input-group">
+        <input type="url" id="playlist-url" placeholder="https://www.youtube.com/playlist?list=..." />
+        <button id="start-btn" class="btn-primary">Start Transformation</button>
+      </div>
+
+      <div class="features">
+        <div class="feat"><span>▶</span> Sequential 30s cuts</div>
+        <div class="feat"><span>▶</span> Full coverage, zero content loss</div>
+        <div class="feat"><span>▶</span> Vertical 9:16 ready</div>
+        <div class="feat"><span>▶</span> One zip download</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PROCESSING ========== -->
+  <section id="processing" class="section">
+    <canvas id="timer-canvas"></canvas>
+    <div class="processing-ui">
+      <h2 class="process-title">Forging Your Reels</h2>
+      <div class="timer-display" id="timer-display">00:00</div>
+      <p class="status-text" id="status-text">Initializing cinematic pipeline...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p class="reel-count" id="reel-count">Estimating number of reels...</p>
+    </div>
+    <audio id="bg-music" loop>
+      <!-- Romantic piano + guitar style track (Pixabay / free for use) -->
+      <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b6b7e0b3e.mp3?filename=romantic-piano-112199.mp3" type="audio/mpeg">
+      <!-- Fallback: silent if blocked -->
+    </audio>
+  </section>
+
+  <!-- ========== DOWNLOAD / OUTRO ========== -->
+  <section id="outro" class="section">
+    <canvas id="outro-canvas"></canvas>
+    <div class="outro-content">
+      <h2>Transformation Complete</h2>
+      <p class="outro-sub" id="final-reels">Your reels are ready</p>
+      <a id="download-btn" class="btn-primary glow" href="#" download>Download All Reels (ZIP)</a>
+      <button id="restart-btn" class="btn-secondary">Forge Another Playlist</button>
+    </div>
+    <div class="letterbox top"></div>
+    <div class="letterbox bottom"></div>
+  </section>
+
+  <script src="js/three-landing.js"></script>
+  <script src="js/three-timer.js"></script>
+  <script src="js/three-outro.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
