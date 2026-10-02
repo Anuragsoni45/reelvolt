@@ -14,7 +14,7 @@
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x050508, 1);
 
-  // Ambient + point lights
+  // Ifaa (Lights)
   const ambient = new THREE.AmbientLight(0x222233, 0.6);
   scene.add(ambient);
 
@@ -26,7 +26,7 @@
   light2.position.set(-8, -4, 8);
   scene.add(light2);
 
-  // Central rotating torus / portal
+  // Torus Knot gidduugaleessaa
   const geometry = new THREE.TorusKnotGeometry(3.2, 0.9, 180, 24);
   const material = new THREE.MeshStandardMaterial({
     color: 0x111122,
@@ -37,7 +37,7 @@
   const knot = new THREE.Mesh(geometry, material);
   scene.add(knot);
 
-  // Wireframe overlay
+  // Wireframe
   const wireGeo = new THREE.TorusKnotGeometry(3.25, 0.92, 100, 16);
   const wireMat = new THREE.MeshBasicMaterial({
     color: 0xff2d55,
@@ -48,7 +48,7 @@
   const wire = new THREE.Mesh(wireGeo, wireMat);
   scene.add(wire);
 
-  // Particle field
+  // Kutaalee xixiqqoo (Particles)
   const particleCount = 1800;
   const positions = new Float32Array(particleCount * 3);
   const colors = new Float32Array(particleCount * 3);
@@ -78,15 +78,16 @@
   const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
-  // Mouse parallax
+  // Parallax hordoffii hantuutaa (Mouse)
   let mouseX = 0, mouseY = 0;
-  document.addEventListener('mousemove', (e) => {
+  window.addEventListener('mousemove', (e) => {
     mouseX = (e.clientX / window.innerWidth) * 2 - 1;
     mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
   });
 
+  let animId = null;
   function animate() {
-    requestAnimationFrame(animate);
+    animId = requestAnimationFrame(animate);
 
     const t = Date.now() * 0.0004;
     knot.rotation.x = t * 0.6;
@@ -107,12 +108,26 @@
   }
   animate();
 
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+  function onResize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  }
+  window.addEventListener('resize', onResize);
 
-  // Export for cleanup if needed
-  window.landingScene = { renderer, scene, camera };
+  // Qulqulleessuuf (Cleanup API)
+  window.landingScene = {
+    renderer,
+    scene,
+    camera,
+    stop: () => {
+      if (animId) cancelAnimationFrame(animId);
+    },
+    start: () => {
+      animate();
+    }
+  };
 })();
