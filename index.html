@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
 </head>
@@ -58,9 +58,8 @@
       <p class="reel-count" id="reel-count">Estimating number of reels...</p>
     </div>
     <audio id="bg-music" loop>
-      <!-- Romantic piano + guitar style track (Pixabay / free for use) -->
-      <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b6b7e0b3e.mp3?filename=romantic-piano-112199.mp3" type="audio/mpeg">
-      <!-- Fallback: silent if blocked -->
+      <!-- Place bg-music.mp3 in the project directory -->
+      <source src="bg-music.mp3" type="audio/mpeg">
     </audio>
   </section>
 
@@ -77,9 +76,9 @@
     <div class="letterbox bottom"></div>
   </section>
 
-  <script src="js/three-landing.js"></script>
-  <script src="js/three-timer.js"></script>
-  <script src="js/three-outro.js"></script>
-  <script src="js/main.js"></script>
+  <script src="three-landing.js"></script>
+  <script src="three-timer.js"></script>
+  <script src="three-outro.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
