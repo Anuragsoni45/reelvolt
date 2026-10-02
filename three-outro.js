@@ -3,6 +3,8 @@
   const canvas = document.getElementById('outro-canvas');
   if (!canvas) return;
 
+  const outroSection = document.getElementById('outro');
+
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x050508, 0.015);
 
@@ -43,9 +45,10 @@
 
   // Floating "reel cards" (simple planes)
   const reels = [];
+  const planeGeo = new THREE.PlaneGeometry(1.4, 2.5);
   for (let i = 0; i < 12; i++) {
     const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.4, 2.5),
+      planeGeo,
       new THREE.MeshBasicMaterial({
         color: i % 2 === 0 ? 0xff2d55 : 0x00f0ff,
         transparent: true,
@@ -83,12 +86,11 @@
   );
   scene.add(pts);
 
+  let animId = null;
+  let isRunning = false;
+
   function animate() {
-    if (!document.getElementById('outro').classList.contains('active')) {
-      requestAnimationFrame(animate);
-      return;
-    }
-    requestAnimationFrame(animate);
+    animId = requestAnimationFrame(animate);
 
     const t = Date.now() * 0.001;
     crystal.rotation.x = t * 0.3;
@@ -108,11 +110,44 @@
 
     renderer.render(scene, camera);
   }
-  animate();
 
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+  function start() {
+    if (!isRunning) {
+      isRunning = true;
+      animate();
+    }
+  }
+
+  function stop() {
+    if (isRunning) {
+      isRunning = false;
+      if (animId) cancelAnimationFrame(animId);
+    }
+  }
+
+  // Watch for outro section activation
+  const observer = new MutationObserver(() => {
+    if (outroSection && outroSection.classList.contains('active')) {
+      start();
+    } else {
+      stop();
+    }
   });
+
+  if (outroSection) {
+    observer.observe(outroSection, { attributes: true, attributeFilter: ['class'] });
+    if (outroSection.classList.contains('active')) start();
+  }
+
+  function onResize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  }
+  window.addEventListener('resize', onResize);
+
+  window.outroScene = { renderer, scene, camera, start, stop };
 })();
