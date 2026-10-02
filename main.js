@@ -19,9 +19,32 @@
   const finalReels = document.getElementById('final-reels');
   const bgMusic = document.getElementById('bg-music');
 
+  let timerInterval = null;
+  let stageTimer = null;
+  let pollInterval = null;
+  let seconds = 0;
+
   function showSection(name) {
-    Object.values(sections).forEach((s) => s.classList.remove('active'));
-    sections[name].classList.add('active');
+    Object.values(sections).forEach((s) => {
+      if (s) s.classList.remove('active');
+    });
+    if (sections[name]) {
+      sections[name].classList.add('active');
+      // Force Three.js canvases to update their aspect ratios upon section reveal
+      window.dispatchEvent(new Event('resize'));
+    }
+  }
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60).toString().padStart(2, '0');
+    const sec = (s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  }
+
+  function clearAllTimers() {
+    if (timerInterval) clearInterval(timerInterval);
+    if (stageTimer) clearInterval(stageTimer);
+    if (pollInterval) clearInterval(pollInterval);
   }
 
   // Landing → Tool
@@ -32,60 +55,67 @@
   // Start transformation
   startBtn.addEventListener('click', () => {
     const url = playlistInput.value.trim();
-    if (!url || !url.includes('youtube.com') && !url.includes('youtu.be')) {
+    // Fixed boolean logic grouping
+    if (!url || (!url.includes('youtube.com') && !url.includes('youtu.be'))) {
       alert('Please enter a valid YouTube playlist URL');
       return;
     }
 
     showSection('processing');
-    startSimulation(url);
+    startProcessing(url);
   });
 
-  // Simulated (or real if backend is running) processing
-  let timerInterval = null;
-  let seconds = 0;
-
-  function formatTime(s) {
-    const m = Math.floor(s / 60).toString().padStart(2, '0');
-    const sec = (s % 60).toString().padStart(2, '0');
-    return `${m}:${sec}`;
-  }
-
-  async function startSimulation(playlistUrl) {
+  async function startProcessing(playlistUrl) {
+    clearAllTimers();
     seconds = 0;
     progressFill.style.width = '0%';
     timerDisplay.textContent = '00:00';
     statusText.textContent = 'Connecting to YouTube...';
     reelCount.textContent = 'Analyzing playlist length...';
 
-    // Try to play romantic music
-    try {
-      bgMusic.volume = 0.45;
-      await bgMusic.play();
-    } catch (e) {
-      console.log('Autoplay blocked – user interaction already happened, music may still work');
+    // Start timer counter
+    timerInterval = setInterval(() => {
+      seconds++;
+      timerDisplay.textContent = formatTime(seconds);
+    }, 1000);
+
+    // Try to play audio
+    if (bgMusic) {
+      try {
+        bgMusic.volume = 0.45;
+        await bgMusic.play();
+      } catch (e) {
+        console.warn('Audio autoplay failed or audio file not found.');
+      }
     }
 
-    // Try real backend first (if user started the Python server)
-    let usedBackend = false;
+    // Attempt backend connection
+    let backendSuccess = false;
     try {
       const res = await fetch('http://localhost:8765/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: playlistUrl }),
       });
+
       if (res.ok) {
-        usedBackend = true;
         const data = await res.json();
-        // Backend streams progress via SSE or we poll – simplified here
-        await pollBackendProgress(data.job_id);
-        return;
+        if (data.job_id) {
+          backendSuccess = true;
+          pollBackendProgress(data.job_id);
+          return;
+        }
       }
     } catch (e) {
-      // Backend not running → fall back to beautiful demo simulation
+      // Backend unavailable; proceed to fallback demo simulation below
     }
 
-    // DEMO SIMULATION (always works offline)
+    if (!backendSuccess) {
+      runDemoSimulation();
+    }
+  }
+
+  function runDemoSimulation() {
     const stages = [
       { t: 3, text: 'Fetching playlist metadata...', progress: 8 },
       { t: 7, text: 'Calculating total duration & reel count...', progress: 18 },
@@ -96,20 +126,13 @@
       { t: 40, text: 'Packaging everything into a single ZIP...', progress: 100 },
     ];
 
-    // Fake total duration → estimate reels (demo uses random realistic number)
-    const estimatedReels = 18 + Math.floor(Math.random() * 45); // 18–62 reels
+    const estimatedReels = 18 + Math.floor(Math.random() * 45);
     reelCount.textContent = `Estimated ${estimatedReels} reels will be generated`;
 
-    timerInterval = setInterval(() => {
-      seconds++;
-      timerDisplay.textContent = formatTime(seconds);
-    }, 1000);
-
     let stageIdx = 0;
-    const stageTimer = setInterval(() => {
+    stageTimer = setInterval(() => {
       if (stageIdx >= stages.length) {
-        clearInterval(stageTimer);
-        clearInterval(timerInterval);
+        clearAllTimers();
         finishDemo(estimatedReels);
         return;
       }
@@ -122,33 +145,36 @@
     }, 400);
   }
 
-  async function pollBackendProgress(jobId) {
-    // Simple polling for real backend
-    const poll = setInterval(async () => {
+  function pollBackendProgress(jobId) {
+    pollInterval = setInterval(async () => {
       try {
         const r = await fetch(`http://localhost:8765/status/${jobId}`);
+        if (!r.ok) throw new Error('Status check failed');
         const data = await r.json();
-        progressFill.style.width = data.progress + '%';
-        statusText.textContent = data.status;
+
+        progressFill.style.width = (data.progress || 0) + '%';
+        statusText.textContent = data.status || 'Processing...';
         reelCount.textContent = data.reels ? `${data.reels} reels ready` : 'Working...';
-        timerDisplay.textContent = formatTime(data.elapsed || seconds);
+        if (data.elapsed) timerDisplay.textContent = formatTime(data.elapsed);
 
         if (data.done) {
-          clearInterval(poll);
-          clearInterval(timerInterval);
+          clearAllTimers();
           finishReal(data);
         }
       } catch (e) {
-        clearInterval(poll);
+        clearAllTimers();
+        alert('Lost connection to processing server.');
+        showSection('tool');
       }
     }, 1500);
   }
 
   function finishDemo(numReels) {
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
+    if (bgMusic) {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    }
     finalReels.textContent = `${numReels} cinematic 30-second reels forged successfully`;
-    // In pure demo mode we offer a sample placeholder zip explanation
     downloadBtn.href = '#';
     downloadBtn.onclick = (e) => {
       e.preventDefault();
@@ -166,7 +192,10 @@
   }
 
   function finishReal(data) {
-    bgMusic.pause();
+    if (bgMusic) {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    }
     finalReels.textContent = `${data.reels} reels ready for download`;
     downloadBtn.href = data.download_url;
     downloadBtn.download = data.filename || 'reelforge-shorts.zip';
